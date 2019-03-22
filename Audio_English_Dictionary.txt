@@ -1,0 +1,37 @@
+import speech_recognition as sr
+import re
+import urllib.request
+while(True):
+    print("Welcome to My English Dictionary")
+    print("1:Proceed.\t2:Don't Proceed.")
+    c = (int(input('Enter Choice:')))
+    if(c==1):
+        try:
+            sample_rate = 48000
+            chunk_size = 2048
+            r = sr.Recognizer()
+            with sr.Microphone(sample_rate = sample_rate,chunk_size = chunk_size) as source:
+                    r.adjust_for_ambient_noise(source) 
+                    print ("Say Your Word")
+                    audio = r.listen(source)
+                    text = r.recognize_google(audio)
+            url = "https://dictionary.reference.com/browse/"
+            url = url+text
+            data = urllib.request.urlopen(url).read()
+            data1 = data.decode('utf-8')
+            m = re.search('meta name="description" content="', data1)
+            start = m.end()
+            end = start + 300
+            newString = data1[start: end]
+            m = re.search("See more.",newString)
+            end = m.start() - 1
+            definition = newString[0:end]
+            print(definition)
+        except:
+            print("Sorry! Word Not Found")
+    elif(c==2):
+        print("Goodbye")
+        break
+    
+
+
