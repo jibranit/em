@@ -1,0 +1,92 @@
+import mysql.connector
+conn=mysql.connector.connect(host="localhost",user="root",database="employeedb")
+cursor=conn.cursor()
+print('Connected To Database')
+def EDB():
+    while(True):
+        try:
+            print("1:ADD EMPLOYEE.\t2:UPDATE EMPLOYEE.\t3:DELETE EMPLOYEE.\t4:SEARCH EMPLOYEE.\t5:SHOW EMPLOYEE")
+            u=User()    
+            c=int(input('Enter Choice:'))
+            if(c==0):
+                break
+            elif(c==1):
+                ename= input('Name:')
+                econtact=int(input('Contact-No:'))
+                eemail=input('Email-id:')
+                edept=input('Dept:')
+                eaddress=input('Address:')
+                u.EmployeeDetails(ename,econtact,eemail,edept,eaddress)
+            elif(c==2):
+                print("1:Name.\t2:dept")
+                c=int(input('Enter Choice:'))
+                if(c==1):
+                    i=int(input('Enter-ID:'))
+                    n=input('Enter-Name:')
+                    u.UpdateEmployeeName(i,n)
+                elif(c==2):
+                    i=int(input('Enter-ID:'))
+                    n=input('Enter-Dept:')
+                    u.UpdateEmployeeDept(i,n)
+            elif(c==3):
+                ID=int(input('Enter-ID:'))
+                u.DeleteEmployeeByID(ID)
+            elif(c==4):
+                print("1:ID.\t2:Name")
+                c=int(input('Enter Choice:'))
+                if(c==1):
+                    i=int(input('Enter-ID:'))
+                    u.SearchEmployeeByID(i)
+                elif(c==2):
+                    n=input('Enter-Name:')
+                    u.SearchEmployeeByName(n)
+            elif(c==5):
+                u.ShowEmployee()
+        except mysql.connector.errors.IntegrityError as e:
+            print(e)      
+                 
+class User:
+    def EmployeeDetails(self,ename,econtact,eemail,edept,eaddress):
+        query="insert into emp(name,contact,email,dept,address) values('"+ename+"',"+str(econtact)+",'"+eemail+"','"+edept+"','"+eaddress+"')"
+        cursor.execute(query)
+        conn.commit()
+        print('Enquiry Added Successfully')
+    def UpdateEmployeeName(self,ID,name):
+         query="Update emp set name='"+name+"' where id="+str(ID)
+         cursor.execute(query)
+         conn.commit()
+         print("Name Updated")
+    def UpdateEmployeeDept(self,ID,dept):
+         query="Update emp set dept='"+dept+"' where id="+str(ID)
+         cursor.execute(query)
+         conn.commit()
+         print("dept Updated")
+    def DeleteEmployeeByID(self,ID):
+        query="delete from emp where id="+str(ID)
+        cursor.execute(query)
+        conn.commit()
+        print('Record Deleted')
+    def SearchEmployeeByID(self,ID):
+         m='ID Not Found'
+         query="Select * from emp where id="+str(ID)
+         cursor.execute(query)
+         print("{:<5}{:<15}{:<15}{:<10}{:<20}[:<5]".format('ID','Name','contact','email','Dept','Address'))
+         for s in cursor:            
+                  print('{:<5}{:<15}{:<15}{:<10}{:<20}{:<5}'.format(s[0],s[1],s[2],s[3],s[4],s[5]))
+                  m='ID Found'
+         print(m)
+    def SearchEmployeeByName(self,name):
+         m='Name Not Found'
+         query="Select * from emp where name='"+name+"'"
+         cursor.execute(query)
+         print("{:<5}{:<15}{:<15}{:<10}{:<20}{:<5}".format('ID','Name','contact','email','Dept','Address'))
+         for s in cursor:            
+                  print('{:<5}{:<15}{:<15}{:<10}{:<20}{:<5}'.format(s[0],s[1],s[2],s[3],s[4],s[5]))
+                  m='ID Found'
+         print(m)               
+    def ShowEmployee(self):
+        query="Select * from emp"
+        cursor.execute(query)
+        print("{:<5}{:<10}{:<10}{:<10}{:<20}{:<5}".format('ID','Name','contact','email','dept','address'))
+        for s in cursor:
+            print('{:<5}{:<10}{:<10}{:<10}{:<20}{:<5}'.format(s[0],s[1],s[2],s[3],s[4],s[5]))
