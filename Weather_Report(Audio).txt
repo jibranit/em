@@ -1,0 +1,28 @@
+import urllib.request
+import speech_recognition as sr
+import ast
+address='http://api.openweathermap.org/data/2.5/weather?appid=0c42f7f6b53b244c78a418f4f181282a&q='
+while(True):
+    print('The Weather report is now availale!!!\nDo you wish to continue?\nPress 1 for "Yes".\tPress 2 for "No"')
+    c = int(input('Enter Choice:'))
+    if c == 1:
+        try:
+            sample_rate = 48000
+            chunk_size = 2048
+            r = sr.Recognizer()
+            with sr.Microphone(sample_rate = sample_rate,chunk_size = chunk_size) as source:
+                r.adjust_for_ambient_noise(source) 
+                print ("Please say the city name...........")
+                audio = r.listen(source)
+                text = r.recognize_google(audio)
+            unit = '&units=metric'
+            url = address + text + unit
+            json_data = urllib.request.urlopen(url).read()
+            data = json_data.decode('utf-8')
+            data1 = ast.literal_eval(data)
+            print('\n\nHere is your report of' ,text,'!!!\n\nThe weather is:',data1['weather'][0]['description'],'\n\nTemperature is:',data1['main']['temp'],'Degree/s calcius','\n\nThe pressure is:',data1['main']['pressure'],'Millibars','\n\nHumidity is:',data1['main']['humidity'],'Degree/s calcius','\n\nMinimum temperature is:',data1['main']['temp_min'],'Degree/s calcius','\n\nMaximum temperature is:',data1['main']['temp_max'],'Degree/s calcius\n')
+        except:
+            print("\n\nSorry! The city is not Found!!!\n\n")
+    elif c == 2:
+        print('\nPlease do visit again!!!')
+        break
